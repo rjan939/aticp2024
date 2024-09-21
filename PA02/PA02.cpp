@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#define RANGE 10 
+#define RANGE 21474
 
 using namespace std;
 
