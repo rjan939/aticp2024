@@ -96,7 +96,7 @@ int processFiles(const char *inputFile, const char *outputFile) {
   vector<Student> students = getData(infile);
   infile.close();
 
-  ofstream outfile;
+  ofstream outfile(outputFile);
   if (!openOutputFile(outfile, outputFile))
     return 1;
   writeData(outfile, students);
