@@ -53,7 +53,7 @@ vector<Student> getData(ifstream &infile) {
     if (tokens.size() == 3) {
       int grade = stoi(tokens[2]);
       if (grade > highest)
-	highest = grade;
+        highest = grade;
 
       Student student = { tokens[0], tokens[1], grade, calculateGrade(grade) };
       
@@ -72,6 +72,39 @@ void writeData(ofstream &outfile, const vector<Student>& students) {
   } 
 }
 
+bool openInputFile(ifstream &infile, const char *filename) {
+  if (!infile) {
+    cerr << "Error: Could not open input file " << filename << '\n';
+    return false;
+  }
+  return true;
+}
+
+bool openOutputFile(ofstream &outfile, const char *filename) {
+  if (!outfile) {
+    cerr << "Error: Could not open output file " << filename << '\n';
+    return false;
+  }
+  return true;
+}
+
+int processFiles(const char *inputFile, const char *outputFile) {
+  ifstream infile(inputFile);
+  if (!openInputFile(infile, inputFile))
+    return 1;
+  
+  vector<Student> students = getData(infile);
+  infile.close();
+
+  ofstream outfile;
+  if (!openOutputFile(outfile, outputFile))
+    return 1;
+  writeData(outfile, students);
+  outfile.close();
+
+  return 0;
+}
+
 int main(int argc, const char *argv[]) {
   if (argc < 3) {
     cerr << "Usage: " << argv[0] << " <input_file>" << " <output_file>" << '\n';
@@ -79,24 +112,6 @@ int main(int argc, const char *argv[]) {
   }
 
   // first arg should be input file name
-  ifstream infile(argv[1]);
-  if (!infile) {
-    cerr << "Error: Could not open input file " << argv[1] << '\n';
-    return 1;
-  }
-
-  vector<Student> students = getData(infile);
-  infile.close();
-
   // second arg should be output file name
-  ofstream outfile(argv[2]);
-  if (!outfile) {
-    cerr << "Error: Could not open output file " << argv[2] << '\n';
-    return 1;
-  }
-
-  writeData(outfile, students);
-  outfile.close();
-  
-  return 0;
+  return processFiles(argv[1], argv[2]);
 }
