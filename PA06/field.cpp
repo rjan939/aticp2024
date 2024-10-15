@@ -13,34 +13,49 @@
  */
 
 /** @todo Implement in field.c based on documentation contained in field.h */
-int getBit (int value, int position) {
+int getBit(int value, int position) {
         return (value >> position) & 1;
 }
 
 /** @todo Implement in field.c based on documentation contained in field.h */
-int setBit (int value, int position) {
+int setBit(int value, int position) {
         value |=  (1 << position);
         return value;
 }
 
 /** @todo Implement in field.c based on documentation contained in field.h */
-int clearBit (int value, int position) {
+int clearBit(int value, int position) {
         return value ^ ~(1 << position);
 }
 
 /** @todo Implement in field.c based on documentation contained in field.h */
-int getField (int value, int hi, int lo, int isSigned) {
-        int right_shift = value >> (lo - 1);
-        int set_bits = (1 << (hi - lo)) - 1;
-        return right_shift & set_bits;
+int getField(int value, int hi, int lo, int isSigned) {
+        // Create mask of only 1s from lo to hi
+        int mask = (1 << (hi - lo + 1)) - 1;
+        int extracted = (value >> lo) & mask;
+        
+        // extracted & (1 << (hi - lo)) implied when it equals 1(or when the leading bit is set)
+        if (isSigned && getBit(extracted, hi))
+                extracted = setBit(extracted, 31);
+
+        return extracted;
 }
 
 /** @todo Implement in field.c based on documentation contained in field.h */
-int setField (int oldValue, int hi, int lo, int newValue) {
-        return 0;
+int setField(int oldValue, int hi, int lo, int newValue) {
+        int mask = ((1 << (hi - lo + 1)) - 1) << lo;
+        /*
+        int tmp = getField(oldValue, hi, lo, 0);
+        int newField = getField(newValue, hi, lo, 0);
+        */
+
+        oldValue = oldValue &  ~mask;
+        newValue = (newValue << lo);
+        
+        return oldValue | newValue;
 }
 
 /** @todo Implement in field.c based on documentation contained in field.h */
-int fieldFits (int value, int width, int isSigned) {
+int fieldFits(int value, int width, int isSigned) {
         return 0;
 }
