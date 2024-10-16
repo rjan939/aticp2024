@@ -25,7 +25,7 @@ int setBit(int value, int position) {
 
 /** @todo Implement in field.c based on documentation contained in field.h */
 int clearBit(int value, int position) {
-        return value ^ ~(1 << position);
+        return value & ~(1 << position);
 }
 
 /** @todo Implement in field.c based on documentation contained in field.h */
@@ -34,10 +34,9 @@ int getField(int value, int hi, int lo, int isSigned) {
         int mask = (1 << (hi - lo + 1)) - 1;
         int extracted = (value >> lo) & mask;
         
-        // extracted & (1 << (hi - lo)) implied when it equals 1(or when the leading bit is set)
-        if (isSigned && getBit(extracted, hi))
-                extracted = setBit(extracted, 31);
-
+        if (isSigned)
+                extracted = ~extracted + 1;
+                
         return extracted;
 }
 
