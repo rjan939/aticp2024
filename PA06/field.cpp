@@ -44,18 +44,23 @@ int getField(int value, int hi, int lo, int isSigned) {
 /** @todo Implement in field.c based on documentation contained in field.h */
 int setField(int oldValue, int hi, int lo, int newValue) {
         int mask = ((1 << (hi - lo + 1)) - 1) << lo;
-        /*
-        int tmp = getField(oldValue, hi, lo, 0);
-        int newField = getField(newValue, hi, lo, 0);
-        */
 
-        oldValue = oldValue &  ~mask;
-        newValue = (newValue << lo);
+        oldValue = oldValue & ~mask;
+        newValue = (newValue << lo) & mask;
         
         return oldValue | newValue;
 }
 
 /** @todo Implement in field.c based on documentation contained in field.h */
 int fieldFits(int value, int width, int isSigned) {
+        if (isSigned) {
+                int min = -(1 << (width - 1));
+                int max = (1 << (width - 1)) - 1;
+                return value >= min && value <= max;
+        }
+        int max = (1 << width) - 1;
+        return value >= 0 && value <= max;
+        
+        
         return 0;
 }
