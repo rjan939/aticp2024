@@ -33,11 +33,15 @@ int getField(int value, int hi, int lo, int isSigned) {
         // Create mask of only 1s from lo to hi
         int mask = (1 << (hi - lo + 1)) - 1;
         int extracted = (value >> lo) & mask;
+
+        int leadingBitSet = getBit(extracted, hi - lo);
         
-        if (isSigned)
+        if (isSigned && leadingBitSet) {
                 extracted = ~extracted + 1;
+        }
+
                 
-        return extracted;
+        return leadingBitSet;
 }
 
 /** @todo Implement in field.c based on documentation contained in field.h */
