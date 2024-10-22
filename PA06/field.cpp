@@ -37,11 +37,12 @@ int getField(int value, int hi, int lo, int isSigned) {
         int leadingBitSet = getBit(extracted, hi - lo);
         
         if (isSigned && leadingBitSet) {
-                extracted = ~extracted + 1;
+                mask = ~mask; 
+                extracted |= mask;
         }
 
                 
-        return leadingBitSet;
+        return extracted;
 }
 
 /** @todo Implement in field.c based on documentation contained in field.h */
