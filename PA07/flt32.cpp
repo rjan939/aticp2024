@@ -61,12 +61,13 @@ void swap(int* x, int *y) {
 }
 
 /** @todo Implement in flt32.c based on documentation contained in flt32.h */
-flt32 flt32_add (flt32 x, flt32 y) {
+flt32 flt32_add(flt32 x, flt32 y) {
         int exp_x = flt32_get_exp(x);
-
         int exp_y = flt32_get_exp(y);
 
+        // Step 1: make x smaller than y
         if (exp_x > exp_y) {
+                swap(&x, &y);
                 swap(&exp_x, &exp_y);
         }
 
@@ -76,8 +77,12 @@ flt32 flt32_add (flt32 x, flt32 y) {
         int sign_y = flt32_get_sign(y); 
         int val_y = flt32_get_val(y);
         
+        // Step 3: Normalize so they both have the same exponent by making smaller exp
+        // turn into the bigger one by shifting by the difference
         int exp_diff = exp_y - exp_x;
-        val_x  = val_x >> exp_diff;
+        val_x >>= exp_diff;
+        exp_x += exp_diff;
+        // Step 4: If sign bit is set, 2's complement on mantissa
         if (sign_x)
                 val_x = ~val_x + 1;
         if (sign_y)
@@ -86,21 +91,34 @@ flt32 flt32_add (flt32 x, flt32 y) {
         
 
         int result_val = val_x + val_y;
-        if (result_val < 0)
+        int result_sign = 0;
+        // Step 5: 2's complement if result is neg
+        if (result_val < 0) {
+                result_sign = 1;
                 result_val = ~result_val + 1;
-
-        int result_exp = exp_x;
-
-        if (result_val & (1 << 24)) {
-                result_val = result_val >> 1;
-                result_exp = result_exp + 1;
         }
-        int result_sign = sign_x;
-        return (result_sign << 31) | (result_exp << 23) | (result_val & 0x7FFFFF);
+        // Step 6: Put mantissa back in its correct spot(leading one in bit 23)
+        int left_most_1_pos = flt32_left_most_1(result_val);
+        if (left_most_1_pos == -1)
+                return 0;
+        int shift_amount = left_most_1_pos - 23;
+
+        // Also change exponent at the same time to reflect new shifts when putting in
+        // correct spot
+        if (shift_amount > 0) {
+                result_val >>= shift_amount; // Shift right if left most is greater than 23
+                exp_y += shift_amount;
+        } else {
+                result_val <<= -shift_amount; // Shift left is left most is less than 23
+                exp_y += shift_amount;
+        }
+        // Step 7: put result_sign in sign bit, exp_y in bit 23-30, mantissa in bit 22-0
+        // without the leading one(hence & 0x7...)
+        return (result_sign << 31) | (exp_y << 23) | (result_val & 0x7FFFFF);
 }
 
 /** @todo Implement in flt32.c based on documentation contained in flt32.h */
 flt32 flt32_sub (flt32 x, flt32 y) {
-        return flt32_add(x, ~y + 1);
+        return flt32_add(x, flt32_negate(y));
 }
 
