@@ -1,7 +1,8 @@
 #include <bits/stdc++.h>
-#include <vector>
 
 using namespace std;
+
+int find_index(const vector<int> &v, int number);
 
 /*
  * Complete the 'findModeCount' function below.
@@ -14,16 +15,17 @@ using namespace std;
  */
 
 int findModeCount(int num, int base, string start) {
-        long long start_val = stoi(start, nullptr, base);
+        int start_val = stoi(start, nullptr, base);
 
-        vector<int> frequency(base, 0);
+        vector<int> frequency(base, 0); 
+
         int max_freq = 0;
 
-        for (long long i = 0; i < num; i++) {
-                long long n = start_val + i;
+        for (int i = 0; i < num; i++) {
+                int n = start_val + i;
 
                 while (n > 0) {
-                        long long digit = n % base;
+                        int digit = n % base;
                         frequency[digit]++;
                         if (frequency[digit] > max_freq) {
                                 max_freq = frequency[digit];
@@ -33,7 +35,21 @@ int findModeCount(int num, int base, string start) {
                 }
         }
 
+
+        /*cout << find_index(frequency, max_freq) << '\n';
+        cout << "index of 88: " << find_index(frequency, 88) << '\n';*/
+
+
         return max_freq; //Change this to return the correct answer.
 }
 
+int find_index(const vector<int> &v, int number) {
+        auto it = find(v.begin(), v.end(), number);
+
+        if (it != v.end()) {
+                int idx = it - v.begin();
+                return idx;
+        }
+        return -1;
+}
 
