@@ -1,6 +1,7 @@
 #include "LinkedList.h"
 #include <iostream>
 
+using namespace std;
 
 /**
  * LinkedList
@@ -45,15 +46,16 @@ LinkedList::LinkedList() : head(nullptr) {}
  *     list.append(5);  // Adds a new node with data 5 at the end of the list
  */
 void LinkedList::append(int data) {
+        Node *tmp = new Node(data);
         if (head == nullptr) {
-                head = new Node(data);
+                head = tmp;
                 return;
         }
         Node *curr = head;
-        while (curr->next) {
+        while (curr->next != nullptr) {
                 curr = curr->next;
         }
-        curr->next = new Node(data);
+        curr->next = tmp;
         
         
         // TODO: Implement append method
@@ -85,13 +87,12 @@ void LinkedList::append(int data) {
  *     void: This function does not return any value.
  */
 void LinkedList::display() const {
-        if (head == nullptr)
-                return;
         Node *curr = head;
-        while (curr) {
+        while (curr != nullptr) {
                 cout << curr->data << " -> ";
+                curr = curr->next;
         }
-        cout << "NULL\n"
+        cout << "NULL\n";
         // TODO: Implement display method
 }
 
@@ -115,6 +116,10 @@ void LinkedList::display() const {
  */
 void LinkedList::prepend(int data) {
         Node *tmp = new Node(data);
+        if (head == nullptr) {
+                head = tmp;
+                return;
+        }
         tmp->next = head;
         head = tmp;
         // TODO: Implement prepend method
@@ -181,8 +186,25 @@ bool LinkedList::removeHead(){
  *     multiple nodes with the same data, only the first one encountered is removed.
  */
 bool LinkedList::remove(int data) {
+        if (head == nullptr)
+                return false;
+        if (head->data == data) {
+                removeHead();
+                return true;
+        }
+
+        Node *curr = head;
+        Node *prev = nullptr;
+        while (curr != nullptr && curr->data != data) {
+                prev = curr;
+                curr = curr->next;
+        }
+        if (curr == nullptr)
+                return false;
+        prev->next = curr->next;
+        delete curr;
         // TODO: Implement remove method
-        return false; // Placeholder return
+        return true; // Placeholder return
 }
 
 /**
@@ -208,6 +230,17 @@ bool LinkedList::remove(int data) {
  *     void: This function does not return any value.
  */
 void LinkedList::insertAfter(int after, int data) {
+        if (head == nullptr)
+                return;
+        Node *tmp = new Node(data);
+        Node *curr = head;
+        while (curr != nullptr && curr->data != after) {
+                curr = curr->next;
+        }
+        if (curr == nullptr)
+                return;
+        curr->next = tmp;
+        
         // TODO: Implement insertAfter method
 }
 
@@ -261,5 +294,18 @@ LinkedList::~LinkedList() {
  *     void: This function does not return any value.
  */
 void LinkedList::reverse() {
+        Node *prev = nullptr;
+        Node *curr = head;
+        Node *next = nullptr;
+
+        while (curr != nullptr) {
+                next = curr->next;
+                curr->next = prev;
+                prev = curr;
+                curr = next;
+        }
+
+        head = prev;
+
         // TODO: Implement reverse method
 }
